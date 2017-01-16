@@ -60,7 +60,9 @@
     <Compile Include="Figure.cs" />
     <Compile Include="FigureBox.cs" />
     <Compile Include="FigureRokade.cs" />
+    <Compile Include="Form\Form1.cs" />
     <Compile Include="Form\Form1.DrawChessBoard.cs" />
+    <Compile Include="Form\Form1.PromotePawn.cs" />
     <Compile Include="Form\Form1.SelectOponent.cs" />
     <Compile Include="Interfaces\ICell.cs" />
     <Compile Include="Interfaces\IFigure.cs" />
@@ -85,7 +87,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Form\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
