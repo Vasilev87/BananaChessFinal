@@ -54,6 +54,7 @@
     <Compile Include="Enums\TypesOfFigures.cs" />
     <Compile Include="Figure.cs" />
     <Compile Include="FigureRokade.cs" />
+    <Compile Include="Form\Form1.DrawChessBoard.cs" />
     <Compile Include="Form\Form1.SelectOponent.cs" />
     <Compile Include="Interfaces\ICell.cs" />
     <Compile Include="Interfaces\IFigure.cs" />
