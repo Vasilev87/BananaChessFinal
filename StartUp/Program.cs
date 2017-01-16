@@ -1,16 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Banana_Chess
 {
-    class Program
+    static class Program
     {
-        public static void Main()
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        ///
+        [STAThread]
+
+        static void Main()
         {
-            var a = "first commin to initialize the project";
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Form1 viewForm = new Form1();
+            Application.Run(viewForm);  //aparently this is stopping the execution flow
         }
     }
 }
