@@ -43,19 +43,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bishop.cs" />
+    <Compile Include="Cell.cs" />
+    <Compile Include="Enums\ColorsInvOptions.cs" />
+    <Compile Include="Enums\ColorsOfFigures.cs" />
+    <Compile Include="Enums\PosOfMyFigures.cs" />
+    <Compile Include="Enums\StatusImages.cs" />
+    <Compile Include="Enums\TimeInvOptions.cs" />
+    <Compile Include="Enums\TypesOfEndGame.cs" />
+    <Compile Include="Enums\TypesOfFigures.cs" />
+    <Compile Include="Figure.cs" />
+    <Compile Include="FigureRokade.cs" />
+    <Compile Include="Form\Form1.SelectOponent.cs" />
     <Compile Include="Interfaces\ICell.cs" />
+    <Compile Include="Interfaces\IFigure.cs" />
+    <Compile Include="Interfaces\IInvitationOptions.cs" />
+    <Compile Include="Interfaces\IKing.cs" />
+    <Compile Include="Interfaces\IRokade.cs" />
     <Compile Include="InvitationOptions.cs" />
+    <Compile Include="King.cs" />
+    <Compile Include="Knight.cs" />
+    <Compile Include="MovingFigure.cs" />
+    <Compile Include="Pawn.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queen.cs" />
+    <Compile Include="Rook.cs" />
+    <Compile Include="Skype\SkypeHandler.ConnectToSkype.cs" />
+    <Compile Include="Skype\SkypeHandler.ConnectToUser.cs" />
+    <Compile Include="Skype\SkypeHandler.cs" />
+    <Compile Include="Skype\SkypeHandler.ReloadMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Enums\" />
     <Folder Include="Exceptions\" />
-    <Folder Include="Form\" />
-    <Folder Include="Skype\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
