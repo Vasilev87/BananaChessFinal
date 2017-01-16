@@ -82,6 +82,7 @@
     <Compile Include="Skype\SkypeHandler.ConnectToUser.cs" />
     <Compile Include="Skype\SkypeHandler.cs" />
     <Compile Include="Skype\SkypeHandler.ReloadMethods.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="UserHandler.cs" />
   </ItemGroup>
   <ItemGroup>
