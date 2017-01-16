@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Bishop.cs" />
     <Compile Include="Cell.cs" />
+    <Compile Include="ChessBoard.cs" />
     <Compile Include="Enums\ColorsInvOptions.cs" />
     <Compile Include="Enums\ColorsOfFigures.cs" />
     <Compile Include="Enums\PosOfMyFigures.cs" />
@@ -52,6 +53,9 @@
     <Compile Include="Enums\TimeInvOptions.cs" />
     <Compile Include="Enums\TypesOfEndGame.cs" />
     <Compile Include="Enums\TypesOfFigures.cs" />
+    <Compile Include="Exceptions\FailedToAttachToSkypeException.cs" />
+    <Compile Include="Exceptions\FileIOExeption.cs" />
+    <Compile Include="Exceptions\SkypeDLLInitializationException.cs" />
     <Compile Include="Figure.cs" />
     <Compile Include="FigureBox.cs" />
     <Compile Include="FigureRokade.cs" />
@@ -79,9 +83,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
