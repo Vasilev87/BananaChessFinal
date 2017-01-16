@@ -596,3 +596,284 @@ namespace Banana_Chess
             }
             canvas.Invalidate(); // request redraw
         }
+
+        // function fired by the event of lifting the mouse button up
+        void canvas_MouseUp_SendInv(object sender, MouseEventArgs e)
+        {
+            // tell the painting routine to paint the send invitation button without shadow
+            sendInvitationBtn.clicked = false;
+
+            //tell the mouseMove function it should not drag the scroll button
+            mouseDowned = false;
+            canvas.Invalidate(); //request redraw
+        }
+
+        // method provoqued by the mouse moving event
+        void canvas_MouseMove_SendInv(object sender, MouseEventArgs e)
+        {
+            //do something only if there is need to drag the scroll button
+            if (mouseDowned && scrollNeeded)
+            {
+                // if scroll is at its maimal high position, it cant move more to up, so just draw it on the top
+                if (e.Y - mouseY <= maxScrollTop)
+                {
+                    scrollBtnTop = maxScrollTop;
+                    scrollDelta = 0;
+                }
+                // if scroll button cant go more to down just draw it at its most lower possible position
+                else if (e.Y - mouseY >= minScrollTop)
+                {
+                    scrollBtnTop = minScrollTop;
+                    scrollDelta = wholeUserAreaHeight - (userBoxHeight - userBoxBorderPen.Width);
+                }
+                // if scroll has room to move, recalculate its new vertical position and the position of the oponents array
+                else
+                {
+                    scrollBtnTop = e.Y - mouseY;
+
+                    //lame solution mathematically but it works
+                    scrollDelta = (double)wholeUserAreaHeight / (calculableScrollArea / (scrollBtnTop - maxScrollTop));
+                }
+                canvas.Invalidate(); //ask for repainting
+            }
+        }
+
+        // function fired by the wheel of the mouse event
+        void canvas_MouseWheel_SendInv(object sender, MouseEventArgs e)
+        {
+            // do something only if mouse is currently on top of the oponent preview boz(window)
+            if (e.X > userBoxLeft && e.X < userBoxLeft + userBoxWidth && e.Y > userBoxTop && e.Y < userBoxTop + userBoxHeight &&
+                scrollNeeded)  // if scroll is needed at all
+            {
+                scrollDelta -= e.Delta / 2;
+
+                // if can't move more to up more, just go to the upper most position
+                if (scrollDelta < 0)
+                {
+                    scrollDelta = 0;
+                }
+                // if can't move more to the down, just go to the lower most position
+                else if (scrollDelta > maxDelta)
+                {   //i think delta cant be zero here?
+                    scrollDelta = maxDelta;
+                }
+
+                //now apply the same logic to calculate the vertical position of the scroll button
+                scrollBtnTop = (calculableScrollArea / (wholeUserAreaHeight / scrollDelta)) + maxScrollTop;
+                if (scrollBtnTop < maxScrollTop)
+                {
+                    scrollBtnTop = maxScrollTop;
+                }
+                else if (scrollBtnTop > minScrollTop)
+                {
+                    scrollBtnTop = minScrollTop;
+                }
+
+                // ask for painting
+                canvas.Invalidate();
+            }
+        }
+
+        //==================================================================
+
+        private void startGame(User user, ColorsOfFigures color)
+        {
+            ChessLogic.myColor = color;
+
+            unsubscribeEvents();
+
+            passControlToChessBoard(user);
+        }
+
+        private void unsubscribeEvents()
+        {
+            canvas.Paint -= canvas_Paint_SendInv;
+            canvas.MouseDown -= canvas_MouseDown_SendInv;
+            canvas.MouseUp -= canvas_MouseUp_SendInv;
+            canvas.MouseMove -= canvas_MouseMove_SendInv;
+            canvas.MouseWheel -= canvas_MouseWheel_SendInv;
+        }
+
+        // method created to reuse code
+        private void drawUserItem(int top, User user, PaintEventArgs e)
+        {
+            // load the vertical dimensions of the oponent's square to be painted
+            clickableAreas[clickableAreasIndex, 0] = top;
+            clickableAreas[clickableAreasIndex, 1] = top + userItemHeight;
+
+            // load the visible oponents inside an array, but this time with their objects
+            clicableUsers[clickableAreasIndex] = user;
+
+            // draw the background square for the oponent box. it is of the size of the whole oponent box item
+            e.Graphics.FillRectangle(userItemBckgroundColor, userItemLeft, top, userItemWidth, userItemHeight);
+
+            // draw a bold line arround the oponent's box
+            e.Graphics.DrawRectangle(user.markedInForm ? userMarkedPen : userNotMarkedPen, //use yellow if selected/marked
+                                                        userItemLeft - userMarkedPen.Width / 2, top - userMarkedPen.Width / 2,
+                                                        userItemWidth + userMarkedPen.Width, userItemHeight + userMarkedPen.Width);
+
+            // draw the thick angled ornament on the top left of the oponent's image
+            userItemOrnamentPoint1.Y = top;
+            userItemOrnamentPoint2.Y = top;
+            userItemOrnamentPoint3.Y = top + photoMargin;
+            userItemOrnamentPoint4.Y = top + photoMargin;
+            userItemOrnamentPoint5.Y = top + photoWidth + photoMargin;
+            userItemOrnamentPoint6.Y = top + userItemHeight;
+
+            e.Graphics.FillPolygon(userItemOrnamentColor, new Point[]{ userItemOrnamentPoint1,
+                                                                       userItemOrnamentPoint2,
+                                                                       userItemOrnamentPoint3,
+                                                                       userItemOrnamentPoint4,
+                                                                       userItemOrnamentPoint5,
+                                                                       userItemOrnamentPoint6});
+
+            // draw the photo of the user
+            e.Graphics.DrawImage(user.photo, photoLeft, top + photoMargin, photoWidth, photoWidth);
+            if (user.hasChessRunning)
+                e.Graphics.DrawImage(avatarChessBoardImg, photoLeft, top + photoMargin, photoWidth, photoWidth);
+
+            // the border of the oponent's photo
+            e.Graphics.DrawRectangle(photoBorder, photoLeft, top + photoMargin, photoWidth, photoWidth);
+
+            // draw the thin ornament on the bottom right side of the oponent's image
+            userItemOrnament2Point1.Y = top + photoMargin + ornament2Width;
+            userItemOrnament2Point2.Y = top + photoMargin - ornament2Width;
+            userItemOrnament2Point3.Y = top + photoMargin + photoWidth + ornament2Width;
+            userItemOrnament2Point4.Y = top + photoMargin + photoWidth + ornament2Width;
+            userItemOrnament2Point5.Y = top + photoMargin + photoWidth - ornament2Width;
+            userItemOrnament2Point6.Y = top + photoMargin + photoWidth - ornament2Width;
+
+            e.Graphics.FillPolygon(userItemOrnamentColor, new Point[]{ userItemOrnament2Point1,
+                                                                       userItemOrnament2Point2,
+                                                                       userItemOrnament2Point3,
+                                                                       userItemOrnament2Point4,
+                                                                       userItemOrnament2Point5,
+                                                                       userItemOrnament2Point6});
+
+            // draw a thin ornament on the very(outern) top left side of the oponents image
+            userItemOrnament3Point1.Y = top - (int)userMarkedPen.Width;
+            userItemOrnament3Point2.Y = top - (int)userMarkedPen.Width;
+            userItemOrnament3Point3.Y = top;
+            userItemOrnament3Point4.Y = top;
+            userItemOrnament3Point5.Y = top + userItemHeight;
+            userItemOrnament3Point6.Y = top + userItemHeight + (int)userMarkedPen.Width;
+
+            e.Graphics.FillPolygon(outernOrnamentColor, new Point[]{ userItemOrnament3Point1,
+                                                                       userItemOrnament3Point2,
+                                                                       userItemOrnament3Point3,
+                                                                       userItemOrnament3Point4,
+                                                                       userItemOrnament3Point5,
+                                                                       userItemOrnament3Point6});
+
+            // draw the right bottom ornament on top of the border of the oponent's square
+            userItemOrnament4Point1.Y = top;
+            userItemOrnament4Point2.Y = top - (int)userMarkedPen.Width;
+            userItemOrnament4Point3.Y = top + userItemHeight + (int)userMarkedPen.Width;
+            userItemOrnament4Point4.Y = top + userItemHeight + (int)userMarkedPen.Width;
+            userItemOrnament4Point5.Y = top + userItemHeight;
+            userItemOrnament4Point6.Y = top + userItemHeight;
+
+            e.Graphics.FillPolygon(userBoxFakeMaskColor, new Point[]{ userItemOrnament4Point1,
+                                                                       userItemOrnament4Point2,
+                                                                       userItemOrnament4Point3,
+                                                                       userItemOrnament4Point4,
+                                                                       userItemOrnament4Point5,
+                                                                       userItemOrnament4Point6});
+
+            if (user.playingChess)
+            {
+                e.Graphics.DrawImage(playingChessIcon, iconLeft, top + iconTop, iconWidth, iconWidth);
+            }
+            else
+            {
+                // draw the skype status images
+                e.Graphics.DrawImage(StatusImages.GetStatusImage(user.skypeStatus), iconLeft, top + iconTop, iconWidth, iconWidth);
+            }
+
+            // draw first the sent for oponent invitation if one
+            // it is decision of designt, the invitation sent to oponent(if any) goes first
+            int topInv = top + invMargin;
+            if (user.InvitationMeToUser)
+            {
+                drawItemOptions(topInv, 0, e, user);
+
+                // one invitation was drawn, so the next(if any) should be displaced
+                topInv += arrowsHeight + invMargin;
+            }
+            // now draw the second inivtation field(if any) in the position that depends from was there a sent invitation or not
+            if (user.InvitationUserToMe)
+            {
+                drawItemOptions(topInv, 1, e, user);
+            }
+        }
+
+        private void drawItemOptions(int top, int type, PaintEventArgs e, User user)
+        {
+            if (user.CompatibleInvOptions)
+            {
+                //draw right/left arrow image regard the invitation booleans inside the User object
+                e.Graphics.DrawImage((type == 0 ? leftArrowImgGreen : rightArrowImgGreen), invLeft, top, (type == 0 ? leftArrowWidth : rightArrowWidth), arrowsHeight);
+
+                // draw the upper line connecting the arrow image and the accept/cancel image
+                e.Graphics.DrawLine(InvLineColorCompat, (type == 0 ? invRightStartX : invLeftStartX), top + invLineWidth / 2, cancelAcceptLeft + 10, top + invLineWidth / 2);
+
+                // sraw cancel, accept image regard of the User's invitation sent/received options
+                e.Graphics.DrawImage((type == 0 ? invCancelImgGreen : invAcceptImgGreen), cancelAcceptLeft, top, cancelAcceptWidth, cancelAcceptWidth);
+
+                // draw the ower line connecting the arrow image and the cancel/accept image
+                e.Graphics.DrawLine(InvLineColorCompat, (type == 0 ? invRightStartX : invLeftStartX), top + cancelAcceptWidth - invLineWidth / 2, cancelAcceptLeft + 10, top + cancelAcceptWidth - invLineWidth / 2);
+            }
+            else
+            {
+                //the same drawing code(same shapes) but using other colors
+                e.Graphics.DrawImage((type == 0 ? leftArrowImg : rightArrowImg), invLeft, top, (type == 0 ? leftArrowWidth : rightArrowWidth), arrowsHeight);
+
+                e.Graphics.DrawLine(InvLineColor, (type == 0 ? invRightStartX : invLeftStartX), top + invLineWidth / 2, cancelAcceptLeft + 10, top + invLineWidth / 2);
+
+                e.Graphics.DrawImage((type == 0 ? invCancelImg : invAcceptImg), cancelAcceptLeft, top, cancelAcceptWidth, cancelAcceptWidth);
+
+                e.Graphics.DrawLine(InvLineColor, (type == 0 ? invRightStartX : invLeftStartX), top + cancelAcceptWidth - invLineWidth / 2, cancelAcceptLeft + 10, top + cancelAcceptWidth - invLineWidth / 2);
+            }
+
+            // for the pourpose of comoddity, put the options to draw inside a temporal InvitaionOptions object
+            // other wise i would have to pass it down as parameter, and there are too much parameters
+            if (type == 0)
+            {
+                tempInvOpt = user.invitation_I_SentToOponentOptions;
+            }
+            else
+            {
+                tempInvOpt = user.invitationOponentSentTo_Me_Options;
+            }
+
+            //first draw one of the first 3 options. they are excluding each other so no need to draw them all inside the little
+            //space between the arrow and the cancel.accept button 
+            for (int i = 0; i < 3; i++)
+            {
+                if (tempInvOpt[i])
+                {
+                    // take the image to draw from the 1st dimension of the array of options images. 
+                    // the third(forth) one in the second dimension is the one that is meaned to be displayed
+                    // between the arrow and cancel.accept buttons
+                    e.Graphics.DrawImage(invOptionsImgs[i, 3], invLeft + leftArrowWidth + optInsideUsrItemMargin, top + 8, 24, 24);
+
+                    // if any option from the first three color options is true, just break, because only one of them could be trua at any moment
+                    break;
+                }
+            }
+
+            // just plain copy the rest of options from the inv options and draw them
+            for (int i = 3; i < 8; i++)
+            {
+                if (tempInvOpt[i])
+                {   // if active use image darker image to draw it
+                    e.Graphics.DrawImage(invOptionsImgs[i, 3], invLeft + leftArrowWidth + optInsideUsrItemMargin + optionsIconWidth * (i - 2), top + 8, 24, 24);
+                }
+                else
+                {   // if inactive, use brighter image to paint it
+                    e.Graphics.DrawImage(invOptionsImgs[i, 2], invLeft + leftArrowWidth + optInsideUsrItemMargin + optionsIconWidth * (i - 2), top + 8, 24, 24);
+                }
+            }
+        }
+    }
+}
